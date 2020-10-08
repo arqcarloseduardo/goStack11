@@ -4,7 +4,7 @@ import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
 
-import AuthConext from '../../context/AuthContext'
+import { AuthContext } from '../../context/AuthContext'
 
 import getValidationErros from '../../utils/getValidationsErrors'
 
@@ -15,13 +15,19 @@ import Button from '../../components/Button'
 
 import { Container, Content, Background } from './styles'
 
+interface SignInFormData {
+  email: string,
+  password: string
+}
+
+
 const SignIn: React.FC = () => {
 
   const formRef = useRef<FormHandles>(null)
 
-  const auth = useContext(AuthConext)
+  const {signIn} = useContext(AuthContext)
 
-  const handleSubmit = useCallback(async(data: object) => {
+  const handleSubmit = useCallback(async(data: SignInFormData) => {
     formRef.current?.setErrors({})
     try{
       const schema = Yup.object().shape({
@@ -33,11 +39,16 @@ const SignIn: React.FC = () => {
         abortEarly: false
       })
 
+      signIn({
+        email: data.email,
+        password: data.password
+      })
+
     }catch (err){
       const errors = getValidationErros(err)
       formRef.current?.setErrors(errors)
     }
-  },[])
+  },[signIn])
 
   return(
     <Container>
